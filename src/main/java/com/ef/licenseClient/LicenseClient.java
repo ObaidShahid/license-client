@@ -1,8 +1,27 @@
 package com.ef.licenseClient;
 
 import javax.jms.JMSException;
+import java.util.Date;
 
 public class LicenseClient {
+
+    public static void main(String args[]) throws JMSException {
+
+        String message = "{\n" +
+                "  \"type\":\"USER_LOGGED_IN\",\n" +
+                "  \"eventTime\":\"8379827892ye\",\n" +
+                "  \"productId\":70304,\n" +
+                "  \"object\":{\n" +
+                "    \"objectId\":11002,\n" +
+                "    \"objectType\":\"asad\"\n" +
+                "  },\n" +
+                "  \"modificationType\":\"REMOVED\"\n" +
+                "}";
+         LicenseClient licenseClient = new LicenseClient("http://127.0.0.1:8080","tcp://127.0.0.1:61616","newTopic","http");
+//         licenseClient.publishEvent(message);
+        Object res = licenseClient.getProductStatus(70304);
+        System.out.println(res);
+    }
 
     AmqProducer amqProducer = new AmqProducer();
     public static LicenseClient licenseClientInstance;
@@ -33,15 +52,8 @@ public class LicenseClient {
         return httpClientService.getProductStatus(productId,licenseManagerUrl);
     }
 
-    public void userLoggedIn(long productId, String modificationType, String eventTime, String obj) throws JMSException {
-        amqProducer.publisher(productId,modificationType,eventTime,obj);
+    public void publishEvent(String message) throws JMSException {
+        amqProducer.publish(message);
     }
 
-    public void objectModified(long productId, String modificationType, String eventTime, String obj) throws JMSException {
-        amqProducer.publisher(productId,modificationType,eventTime,obj);
-    }
-
-    public void activityFired(long productId, String modificationType, String eventTime, String obj) throws JMSException {
-        amqProducer.publisher(productId,modificationType,eventTime,obj);
-    }
 }

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import javax.jms.*;
 import javax.sound.midi.Soundbank;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -33,25 +34,19 @@ public class AmqProducer{
         }
     }
 
-    public void publisher(long productId, String modificationType, String eventTime, String obj) throws JMSException{
+    public void publish(String message) throws JMSException{
+
         System.out.println("Creating producer.");
         MessageProducer producer = session.createProducer(destination);
-//        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 
         // We will send an object message on ActiveMQ Topic'
         System.out.println("Constructing object to publish on ActiveMQ Topic.");
-        Map<String, Object> objectMap = new HashMap<String, Object>();
-        objectMap.put("productId", productId);
-        objectMap.put("modificationType", modificationType);
-        objectMap.put("eventTime", eventTime);
-        objectMap.put("object", obj);
 
-        ObjectMessage message = session
-                .createObjectMessage((Serializable) objectMap);
+        ObjectMessage objectMessage = session.createObjectMessage(message);
 
         // Here we are sending our message!
-        System.out.println("Sending objects from publisher to ActiveMQ. ");
-        producer.send(message);
-        System.out.println("Objects from publisher to ActiveMQ Sent.");
+//        System.out.println("Sending objects from publisher to ActiveMQ. ");
+        producer.send(objectMessage);
+        System.out.println("Object published on ActiveMQ successfully.");
     }
 }
