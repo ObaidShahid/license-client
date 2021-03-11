@@ -1,18 +1,15 @@
 package com.ef.licenseClient;
 
-import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
-import javax.sound.midi.Soundbank;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
+
 
 public class AmqProducer{
+
+    Logger logger = LoggerFactory.getLogger(AmqProducer.class);
     static ConnectionFactory connectionFactory;
     static Connection connection;
     static Session session;
@@ -29,24 +26,23 @@ public class AmqProducer{
             destination = session.createTopic(topicName);
 
         }catch(Exception e) {
-            System.out.println(e);
             e.printStackTrace();
         }
     }
 
     public void publish(String message) throws JMSException{
 
-        System.out.println("Creating producer.");
+        logger.info("Creating producer.");
         MessageProducer producer = session.createProducer(destination);
 
         // We will send an object message on ActiveMQ Topic'
-        System.out.println("Constructing object to publish on ActiveMQ Topic.");
+        logger.info("Constructing object to publish on ActiveMQ Topic.");
 
         ObjectMessage objectMessage = session.createObjectMessage(message);
 
         // Here we are sending our message!
 //        System.out.println("Sending objects from publisher to ActiveMQ. ");
         producer.send(objectMessage);
-        System.out.println("Object published on ActiveMQ successfully.");
+        logger.info("Object published on ActiveMQ successfully.");
     }
 }
